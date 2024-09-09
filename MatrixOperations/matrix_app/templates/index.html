@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Operations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+            <!-- Animation GIF -->
+            <div class="animation-container text-center">
+                <img src="{{ url_for('static', filename='images/matrix-animation.gif') }}" alt="Matrix Animation" class="matrix-animation">
+            </div>
+    
+    <div class="container text-center">
+        <!-- Logo -->
+        <img src="{{ url_for('static', filename='images/matrix-logo.png') }}" alt="Matrix Logo" class="logo">
+
+        <!-- Display Errors if any -->
+        {% if errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Matrix Operations Form -->
+        <form action="{{ url_for('calculate') }}" method="POST" class="mt-4">
+            <div class="mb-3">
+                <label for="matrix1" class="form-label">Matrix 1:</label>
+                <textarea class="form-control" name="matrix1" id="matrix1" rows="3" placeholder="Enter Matrix 1" required>{{ request.form.get('matrix1') }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="matrix2" class="form-label">Matrix 2 (Optional):</label>
+                <textarea class="form-control" name="matrix2" id="matrix2" rows="3" placeholder="Enter Matrix 2 (Optional)">{{ request.form.get('matrix2') }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="scalar" class="form-label">Scalar (Optional for Scalar Multiplication):</label>
+                <input type="text" class="form-control" name="scalar" id="scalar" placeholder="Enter a Scalar Value" value="{{ request.form.get('scalar') }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="operation" class="form-label">Operation:</label>
+                <select class="form-select" name="operation" id="operation" required>
+                    <option value="add" {% if request.form.get('operation') == 'add' %}selected{% endif %}>Add</option>
+                    <option value="subtract" {% if request.form.get('operation') == 'subtract' %}selected{% endif %}>Subtract</option>
+                    <option value="multiply" {% if request.form.get('operation') == 'multiply' %}selected{% endif %}>Element-wise Multiply</option>
+                    <option value="matmul" {% if request.form.get('operation') == 'matmul' %}selected{% endif %}>Matrix Multiply</option>
+                    <option value="transpose" {% if request.form.get('operation') == 'transpose' %}selected{% endif %}>Transpose</option>
+                    <option value="scalar_multiply" {% if request.form.get('operation') == 'scalar_multiply' %}selected{% endif %}>Scalar Multiply</option>
+                    <option value="determinant" {% if request.form.get('operation') == 'determinant' %}selected{% endif %}>Determinant</option>
+                    <option value="inverse" {% if request.form.get('operation') == 'inverse' %}selected{% endif %}>Inverse</option>
+                    <option value="eigenvalues" {% if request.form.get('operation') == 'eigenvalues' %}selected{% endif %}>Eigenvalues</option>
+                    <option value="eigenvectors" {% if request.form.get('operation') == 'eigenvectors' %}selected{% endif %}>Eigenvectors</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Calculate</button>
+        </form>
+    </div>
+</body>
+</html>

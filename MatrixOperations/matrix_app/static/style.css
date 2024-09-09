@@ -1,0 +1,76 @@
+/* Global Styles */
+body {
+    background-color: #f2f2f2;
+    color: #333;
+    padding-top: 50px;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 500px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Logo Styling */
+.logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 80px; /* Resized to fit better */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Title Styling */
+.title {
+    color: #888;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+/* Animation GIF Styling */
+.animation-container {
+    max-width: 100%; /* Make sure it's within the container width */
+    margin: 0 auto;
+}
+
+.matrix-animation {
+    max-width: 150px; /* Control the size */
+    height: auto;
+    margin: 0 auto;
+    display: block; /* Center it */
+}
+
+/* Input and Button Styling */
+textarea, input, select {
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+textarea:focus, input:focus, select:focus {
+    background-color: #f0f0f0;
+    border-color: #bbb;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background-color: #a0a0a0;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #8a8a8a;
+}
