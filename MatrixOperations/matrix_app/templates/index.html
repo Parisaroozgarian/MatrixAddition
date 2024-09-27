@@ -6,18 +6,16 @@
     <title>Matrix Operations</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-            <!-- Animation GIF -->
-            <div class="animation-container text-center">
-                <img src="{{ url_for('static', filename='images/matrix-animation.gif') }}" alt="Matrix Animation" class="matrix-animation">
-            </div>
-    
-    <div class="container text-center">
-        <!-- Logo -->
-        <img src="{{ url_for('static', filename='images/matrix-logo.png') }}" alt="Matrix Logo" class="logo">
+    <div class="container my-5 p-4 shadow rounded">
+        <img src="{{ url_for('static', filename='images/matrix-logo.png') }}" alt="Matrix Logo" class="logo mb-4">
 
-        <!-- Display Errors if any -->
+        <div class="animation-container mb-4">
+            <img src="{{ url_for('static', filename='images/matrix-animation.gif') }}" alt="Matrix Animation" class="matrix-animation">
+        </div>
+
         {% if errors %}
         <div class="alert alert-danger">
             <ul>
@@ -28,21 +26,24 @@
         </div>
         {% endif %}
 
-        <!-- Matrix Operations Form -->
-        <form action="{{ url_for('calculate') }}" method="POST" class="mt-4">
+        <form action="{{ url_for('calculate') }}" method="POST" class="mt-4" id="matrixForm">
+            <h2 class="text-primary mb-4">Matrix Operations</h2>
+
             <div class="mb-3">
                 <label for="matrix1" class="form-label">Matrix 1:</label>
-                <textarea class="form-control" name="matrix1" id="matrix1" rows="3" placeholder="Enter Matrix 1" required>{{ request.form.get('matrix1') }}</textarea>
+                <textarea class="form-control" name="matrix1" id="matrix1" rows="3" placeholder="Enter Matrix 1" onclick="clearPlaceholder(this)">{{ request.form.get('matrix1') }}</textarea>
+                <small class="form-text text-muted">Example: [[1, 2], [3, 4]]</small>
             </div>
 
             <div class="mb-3">
                 <label for="matrix2" class="form-label">Matrix 2 (Optional):</label>
-                <textarea class="form-control" name="matrix2" id="matrix2" rows="3" placeholder="Enter Matrix 2 (Optional)">{{ request.form.get('matrix2') }}</textarea>
+                <textarea class="form-control" name="matrix2" id="matrix2" rows="3" placeholder="Enter Matrix 2 (Optional)" onclick="clearPlaceholder(this)">{{ request.form.get('matrix2') }}</textarea>
+                <small class="form-text text-muted">Example: [[1, 2], [3, 4]]</small>
             </div>
 
             <div class="mb-3">
                 <label for="scalar" class="form-label">Scalar (Optional for Scalar Multiplication):</label>
-                <input type="text" class="form-control" name="scalar" id="scalar" placeholder="Enter a Scalar Value" value="{{ request.form.get('scalar') }}">
+                <input type="text" class="form-control" name="scalar" id="scalar" placeholder="Enter a Scalar Value"  onclick="clearPlaceholder(this)" value="{{ request.form.get('scalar') }}">
             </div>
 
             <div class="mb-3">
@@ -64,5 +65,15 @@
             <button type="submit" class="btn btn-primary w-100">Calculate</button>
         </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function clearPlaceholder(textarea) {
+            if (textarea.value === "None") {
+                textarea.value = ""; // Clear the placeholder when clicked
+            }
+        }
+    </script>
 </body>
 </html>

@@ -78,45 +78,57 @@ class MyList:
     def to_numpy(self):
         return np.array(self.__list)
 
+    def is_square(self):
+        return self.sizerow == self.sizecol  # New method to check if the matrix is square
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/calculate', methods=['POST'])
 def calculate():
+    errors = []
+    
     matrix1_str = request.form.get('matrix1')
     matrix2_str = request.form.get('matrix2')
     scalar_str = request.form.get('scalar')
     operation = request.form.get('operation')
 
-    errors = []
-    
+    print(f"Received Matrix 1: {matrix1_str}")
+    print(f"Received Matrix 2: {matrix2_str}")
+    print(f"Received Scalar: {scalar_str}")
+    print(f"Selected Operation: {operation}")
+
+    # Initialize matrices
+    matrix1 = None
+    matrix2 = None
+
     # Matrix Parsing
     try:
         matrix1 = parse_matrix(matrix1_str)
     except ValueError as e:
         errors.append(f"Matrix 1 error: {str(e)}")
-        matrix1 = None
 
-    try:
-        matrix2 = parse_matrix(matrix2_str) if matrix2_str else None
-    except ValueError as e:
-        errors.append(f"Matrix 2 error: {str(e)}")
-        matrix2 = None
+    if matrix2_str:
+        try:
+            matrix2 = parse_matrix(matrix2_str)
+        except ValueError as e:
+            errors.append(f"Matrix 2 error: {str(e)}")
 
     # Parse scalar safely
-    try:
-        scalar = float(scalar_str) if scalar_str else None
-    except ValueError:
-        scalar = None
-        errors.append("Invalid scalar value. Please provide a valid number.")
+    scalar = None
+    if scalar_str:
+        try:
+            scalar = float(scalar_str)
+        except ValueError:
+            errors.append("Invalid scalar value. Please provide a valid number.")
 
+    # Prepare result variable
     result = None
+
     if operation in ["add", "subtract", "multiply", "matmul"] and matrix2 is None:
         errors.append("Matrix 2 is required for the selected operation.")
-    
+
     if not errors:
         try:
             if operation == "add":
@@ -128,39 +140,62 @@ def calculate():
             elif operation == "matmul":
                 result = matrix1 @ matrix2
             elif operation == "transpose":
-                result = np.transpose(matrix1)
+                result = matrix1.transpose()
             elif operation == "scalar_multiply":
                 if scalar is not None:
-                    result = matrix1 * scalar
+                    result = matrix1.scalar_multiply(scalar)
                 else:
                     errors.append("Scalar value is required for scalar multiplication.")
             elif operation == "determinant":
-                result = np.linalg.det(matrix1)
+                if matrix1.is_square():
+                    result = np.linalg.det(matrix1.to_numpy())
+                else:
+                    errors.append("Determinant can only be calculated for square matrices.")
             elif operation == "inverse":
-                result = np.linalg.inv(matrix1)
+                if matrix1.is_square():
+                    result = np.linalg.inv(matrix1.to_numpy())
+                else:
+                    errors.append("Inverse can only be calculated for square matrices.")
             elif operation == "eigenvalues":
-                result = np.linalg.eigvals(matrix1)
+                if matrix1.is_square():
+                    result = np.linalg.eigvals(matrix1.to_numpy())
+                else:
+                    errors.append("Eigenvalues can only be calculated for square matrices.")
             elif operation == "eigenvectors":
-                result = np.linalg.eig(matrix1)
-        except Exception as e:
-            errors.append(str(e))
+                if matrix1.is_square():
+                    eigenvalues, eigenvectors = np.linalg.eig(matrix1.to_numpy())
+                    result = eigenvectors.tolist()  # Store eigenvectors as a list
+                else:
+                    errors.append("Eigenvectors can only be calculated for square matrices.")
 
-        if isinstance(result, np.ndarray):
-            result_str = np.array2string(result, precision=2, separator=', ')
-        else:
-            result_str = str(result)
+        except Exception as e:
+            errors.append("Error in calculation: " + str(e))
+
+    # Prepare the result string
+    if isinstance(result, np.ndarray):
+        result_str = np.array2string(result, precision=2, separator=', ')
+    elif result is not None:
+        result_str = str(result)
     else:
-        result_str = None
+        result_str = "No result"
 
     return render_template('result.html', result=result_str, errors=errors)
 
-
 def parse_matrix(matrix_str):
     try:
-        return np.array(ast.literal_eval(matrix_str))
+        matrix = ast.literal_eval(matrix_str)
+        if not isinstance(matrix, (list, tuple)) or not all(isinstance(row, (list, tuple)) for row in matrix):
+            raise ValueError("Matrix must be a list of lists.")
+        if len(set(len(row) for row in matrix)) != 1:
+            raise ValueError("All rows must have the same number of columns.")
+        
+        # Calculate number of rows and columns
+        n = len(matrix)
+        m = len(matrix[0])
+        
+        return MyList(n, m, matrix)  # Create MyList with rows and columns
     except (ValueError, SyntaxError):
         raise ValueError("Invalid matrix format. Ensure you use a 2D list, e.g., [[1, 2], [3, 4]].")
-
 
 if __name__ == '__main__':
     app.run(debug=True)

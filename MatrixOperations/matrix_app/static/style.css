@@ -1,76 +1,88 @@
 /* Global Styles */
 body {
-    background-color: #f2f2f2;
+    background-color: #f4f4f9; /* Soft light background */
     color: #333;
     padding-top: 50px;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
+h2 {
+    color: #007bff; /* Primary color for headings */
+}
+
+/* Container Styles */
 .container {
-    max-width: 500px;
+    max-width: 600px;
     background-color: #ffffff;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
     margin: 0 auto;
-    position: relative;
 }
 
 /* Logo Styling */
 .logo {
     display: block;
     margin: 0 auto;
-    max-width: 80px; /* Resized to fit better */
-    height: auto;
-    margin-bottom: 20px;
+    max-width: 120px; /* Optimized for minimal design */
 }
 
-/* Title Styling */
-.title {
-    color: #888;
-    text-align: center;
-    font-size: 1.75rem;
-    font-weight: 500;
-    margin-bottom: 20px;
-}
-
-/* Animation GIF Styling */
+/* Animation Styling */
 .animation-container {
-    max-width: 100%; /* Make sure it's within the container width */
-    margin: 0 auto;
+    max-width: 300px; /* Keep the animation container full width */
+    margin: 0 auto; /* Center the animation */
 }
 
 .matrix-animation {
-    max-width: 150px; /* Control the size */
-    height: auto;
-    margin: 0 auto;
-    display: block; /* Center it */
+    width: 300px; /* Do not change the width */
+    height: auto; /* Maintain aspect ratio */
 }
 
 /* Input and Button Styling */
 textarea, input, select {
-    background-color: #f8f8f8;
-    border: 1px solid #ccc;
-    box-shadow: none;
-    color: #333;
-    transition: all 0.3s ease;
+    background-color: #f8f9fa; /* Light input background */
+    border: 1px solid #ced4da; /* Subtle border */
+    color: #495057; /* Darker text */
 }
 
 textarea:focus, input:focus, select:focus {
-    background-color: #f0f0f0;
-    border-color: #bbb;
-    box-shadow: none;
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 .btn-primary {
-    background-color: #a0a0a0;
-    border: none;
-    padding: 10px;
-    font-weight: bold;
-    width: 100%;
-    transition: background-color 0.3s ease;
+    background-color: #007bff;
+    border: none; /* No border for minimal look */
+    border-radius: 8px; /* More rounded corners */
+    padding: 10px 15px; /* Adequate padding */
+    font-size: 16px; /* Bigger font for readability */
+    transition: background-color 0.3s;
 }
 
 .btn-primary:hover {
-    background-color: #8a8a8a;
+    background-color: #0056b3; /* Darker on hover */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 576px) {
+    .container {
+        padding: 15px; /* Adjusted padding for mobile */
+    }
+
+    .btn-primary {
+        font-size: 14px; /* Slightly smaller font */
+    }
+
+    .logo {
+        max-width: 80px; /* Smaller logo for mobile */
+    }
+
+    .animation-container {
+        max-width: 80%; /* Allow more width on mobile while keeping proportions */
+    }
+
+    .matrix-animation {
+        width: 100%; /* Make it responsive to the container */
+    }
 }
