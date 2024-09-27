@@ -168,6 +168,7 @@ def calculate():
                 else:
                     errors.append("Eigenvectors can only be calculated for square matrices.")
 
+
         except Exception as e:
             errors.append("Error in calculation: " + str(e))
 
