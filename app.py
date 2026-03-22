@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
+import uuid
 import numpy as np
 import ast
 import logging
@@ -34,6 +35,7 @@ from models import MatrixCalculation  # noqa: E402
 with app.app_context():
     db.create_all()
 
+
 def matrix_to_json(matrix):
     """Convert numpy matrix to JSON-serializable format."""
     if isinstance(matrix, np.ndarray):
@@ -44,10 +46,18 @@ def matrix_to_json(matrix):
         return str(matrix)
     return matrix
 
+
+@app.before_request
+def set_session_id():
+    if 'user_id' not in session:
+        session['user_id'] = str(uuid.uuid4())
+
+
 @app.template_filter('tojson')
 def tojson_filter(obj):
     """Custom tojson filter that handles numpy arrays."""
     return json.dumps(matrix_to_json(obj))
+
 
 def parse_matrix(matrix_str):
     """Parse a string representation of a matrix into a numpy array."""
@@ -72,6 +82,7 @@ def parse_matrix(matrix_str):
     except Exception as e:
         raise ValueError(f"Error parsing matrix: {str(e)}")
 
+
 def validate_matrices(matrix1, matrix2=None, operation=None):
     """Validate matrices based on the operation."""
     if matrix1 is None:
@@ -93,6 +104,7 @@ def validate_matrices(matrix1, matrix2=None, operation=None):
     elif operation in ["determinant", "inverse", "eigenvalues", "eigenvectors"]:
         if matrix1.shape[0] != matrix1.shape[1]:
             raise ValueError(f"Square matrix required for {operation}")
+
 
 @app.route('/', methods=['GET', "POST"])
 def index():
@@ -161,10 +173,8 @@ def index():
                 if result_type == "matrix":
                     result = matrix_to_json(result)
                 elif result_type == "special":
-                    # Keep the string format for eigenvalues/vectors
                     pass
                 else:
-                    # For scalar results
                     result = float(result)
 
             logger.debug(f"Operation: {operation}")
@@ -172,38 +182,40 @@ def index():
             logger.debug(f"Result: {result}")
 
             try:
-                # Save calculation to database
+                # Save calculation to database with user_id
                 calc = MatrixCalculation(
                     matrix1=matrix_to_json(matrix1),
                     matrix2=matrix_to_json(matrix2) if matrix2 is not None else None,
                     scalar=scalar,
                     operation=operation,
-                    result=matrix_to_json(result)
+                    result=matrix_to_json(result),
+                    user_id=session['user_id']
                 )
                 db.session.add(calc)
                 db.session.commit()
             except Exception as db_error:
                 logger.error(f"Database error: {str(db_error)}")
-                # Continue without saving to database
                 pass
 
     except Exception as e:
         errors.append(str(e))
         logger.error(f"Error in calculation: {str(e)}")
 
-    # Get recent calculations for display
+    # Get recent calculations for this user only
     try:
-        recent_calculations = MatrixCalculation.query.order_by(
-            MatrixCalculation.created_at.desc()).limit(5).all()
+        recent_calculations = MatrixCalculation.query.filter_by(
+            user_id=session['user_id']
+        ).order_by(MatrixCalculation.created_at.desc()).limit(5).all()
     except Exception as e:
         logger.error(f"Error fetching recent calculations: {str(e)}")
         recent_calculations = []
 
     return render_template('index.html',
-                         result=result,
-                         result_type=result_type,
-                         errors=errors,
-                         recent_calculations=recent_calculations)
+                           result=result,
+                           result_type=result_type,
+                           errors=errors,
+                           recent_calculations=recent_calculations)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
